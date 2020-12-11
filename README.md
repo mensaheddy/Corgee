@@ -47,9 +47,6 @@ To start server:
   rails s
 ```
 
-## Challenges
-- Found it a challenge to understand what it meant by simulate user authentication.
-
 ## Summary
 This challenge was completed in 2 days. It was quite an experience. Listed below are things I enjoyed.
 
