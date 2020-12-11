@@ -6,33 +6,6 @@
 - comprehensive tests.
 - Good implementation of logic.
 
-# The challenge
-
-We would like you to create REST API with these requirements. The REST API
-should connect to a database either Postgres, MySql, or Sqlite.
-
-## Review
-#### User:
-As a user should to be able to register to Corgee
-The minimum information that is needed to input to register to Corgee are:
-- first name
-- last name
-- email
-- password
-- repeated password
-
-To log in to Corgee, a user needs to provide a valid email & password.
-
-#### Transactions
-As a login user, user should able to create, read, update and delete his
-transactions.
-
-These endpoints should have authentication. The minimum information for a
-transaction are:
-- description
-- amount
-- type (expense or income)
-
 ## Setup
 To setup:
 ```bash
@@ -78,3 +51,30 @@ Here are some things I would like to improve in my implementation:
 - Due to time constrainst was unable to provide:
   - Use docker container for development setup
   - Provide a clear API documentation
+
+# The challenge
+
+We would like you to create REST API with these requirements. The REST API
+should connect to a database either Postgres, MySql, or Sqlite.
+
+## Review
+#### User:
+As a user should to be able to register to Corgee
+The minimum information that is needed to input to register to Corgee are:
+- first name
+- last name
+- email
+- password
+- repeated password
+
+To log in to Corgee, a user needs to provide a valid email & password.
+
+#### Transactions
+As a login user, user should able to create, read, update and delete his
+transactions.
+
+These endpoints should have authentication. The minimum information for a
+transaction are:
+- description
+- amount
+- type (expense or income)
