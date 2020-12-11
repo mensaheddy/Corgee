@@ -119,7 +119,6 @@ RSpec.describe TransactionsController, type: :controller do
   end
 
   describe "destory" do
-
     let!(:transaction) do
       FactoryBot.create(:transaction, user: current_user, description: "my description", amount: "12000", classification: "income")
     end
@@ -144,17 +143,29 @@ RSpec.describe TransactionsController, type: :controller do
       FactoryBot.create(:transaction, user: current_user, description: "show description", amount: "12000", classification: "income")
     end
 
-    before do
-      login(current_user)
-      get :show, params: { id: transaction.id }
+    context "success" do
+      before do
+        login(current_user)
+        get :show, params: { id: transaction.id }
+      end
+
+      it "render success status" do
+        expect(response.status).to eq(200)
+      end
+
+      it "render transaction " do
+        expect(response_body).to include("description" => "show description")
+      end
     end
 
-    it "render success status" do
-      expect(response.status).to eq(200)
-    end
+    context "failure" do
+      before do
+        get :show, params: { id: transaction.id }
+      end
 
-    it "render transaction " do
-      expect(response_body).to include("description" => "show description")
+      it "unautorized access" do
+        expect(response.status).to eq(401)
+      end
     end
   end
 end
