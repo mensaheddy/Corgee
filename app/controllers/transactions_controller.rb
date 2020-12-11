@@ -52,7 +52,7 @@ class TransactionsController < ApplicationController
 
   def validate_ownership_of_transaction!
     unless @transaction.user == current_user
-      raise ExceptionsHandler::UnauthorizedAccess, "Unauthorized access to this transaction"
+      raise ExceptionHandlers::UnauthorizedAccess, "Unauthorized access to this transaction"
       # logging mechanism should be implemented
     end
   end

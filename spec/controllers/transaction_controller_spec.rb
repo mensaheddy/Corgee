@@ -123,17 +123,36 @@ RSpec.describe TransactionsController, type: :controller do
       FactoryBot.create(:transaction, user: current_user, description: "my description", amount: "12000", classification: "income")
     end
 
-    before do
-      login(current_user)
-      delete :destroy, params: { id: transaction.id }
+    context "success" do
+
+      before do
+        login(current_user)
+        delete :destroy, params: { id: transaction.id }
+      end
+
+      it "deletes transaction" do
+        expect(response.status).to eq(200)
+      end
+
+      it "render success " do
+        expect(response_body).to eq({ "success" => true})
+      end
     end
 
-    it "deletes transaction" do
-      expect(response.status).to eq(200)
-    end
+    context "failure" do
+      let!(:not_current_user) { FactoryBot.create(:user, first_name: "whiteson", last_name: "vasar", email: "whiteson@mail.com", password: "1234567890", password_confirmation: "1234567890") }
+      let!(:transaction) do
+        FactoryBot.create(:transaction, user: current_user, description: "my description", amount: "12000", classification: "income")
+      end
 
-    it "render success " do
-      expect(response_body).to eq({ "success" => true})
+      before do
+        login(not_current_user)
+        delete :destroy, params: { id: transaction.id }
+      end
+
+      it "returns failure to not_current_user" do
+        expect(response.status).to eq(401)
+      end
     end
   end
 
