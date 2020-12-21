@@ -1,5 +1,5 @@
 class TransactionsController < ApplicationController
-  before_action :find_transaction, only: [:update, :destroy, :show]
+  before_action :find_transaction!, only: [:update, :destroy, :show]
   before_action :validate_ownership_of_transaction!, only: [:update, :destroy, :show]
 
   def index
@@ -9,7 +9,9 @@ class TransactionsController < ApplicationController
   end
 
   def create
-    outcome = CreateTransactionService.new(attributes: transaction_attributes).call
+    outcome = CreateTransactionService.new(
+      attributes: transaction_attributes.merge(user_id: current_user.id)
+    ).call
 
     if outcome.success?
       render :json => { success: true }, status: :ok
@@ -43,11 +45,12 @@ class TransactionsController < ApplicationController
   private
 
   def transaction_attributes
-    params.require(:transaction).permit(:description, :amount, :classification, :user_id)
+    params.require(:transaction).permit(:description, :amount, :classification)
   end
 
-  def find_transaction
+  def find_transaction!
     @transaction ||= Transaction.find_by(id: params[:id])
+    return render :json => { message: "Record not found" }, status: :not_found unless @transaction
   end
 
   def validate_ownership_of_transaction!

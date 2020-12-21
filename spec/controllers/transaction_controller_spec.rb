@@ -19,7 +19,13 @@ RSpec.describe TransactionsController, type: :controller do
       end
 
       it 'renders new account' do
+        post :create, params: { transaction: valid_attributes }
         expect(response.status).to eq(200)
+      end
+
+      it "creates transaction only for current_user" do
+        post :create, params: { transaction: valid_attributes }
+        expect(Transaction.last.user).to eq(current_user)
       end
     end
 
@@ -83,10 +89,11 @@ RSpec.describe TransactionsController, type: :controller do
     let!(:transaction) do
       FactoryBot.create(:transaction, user: current_user, description: "my description", amount: "12000", classification: "income")
     end
+    let(:transaction_id) { transaction.id }
 
     before do
       login(current_user)
-      put :update, params: { transaction: attributes, id: transaction.id }
+      put :update, params: { transaction: attributes, id: transaction_id }
     end
 
     context "success" do
@@ -116,20 +123,46 @@ RSpec.describe TransactionsController, type: :controller do
         expect(response_body["errors"]).to eq({"errors" => ["Amount can't be blank"]})
       end
     end
+
+    context "unauthorized action" do
+      let(:random) { create(:user, email: "sample@example.com") }
+      let!(:transaction) do
+        FactoryBot.create(:transaction, user: random, description: "my description", amount: "12000", classification: "income")
+      end
+
+      let(:attributes) do
+        { description: "new description" }
+      end
+
+      it "does not allow access to record not associated to current user" do
+        expect(response_body["message"]).to eq("Unauthorized access to this transaction")
+      end
+    end
+
+    context "not found" do
+      let(:transaction_id) { 2000 }
+      let(:attributes) do
+        { description: "new description" }
+      end
+
+      it "returns 404 not found" do
+        expect(response_body["message"]).to eq("Record not found")
+      end
+    end
   end
 
   describe "destory" do
     let!(:transaction) do
       FactoryBot.create(:transaction, user: current_user, description: "my description", amount: "12000", classification: "income")
     end
+    let(:transaction_id) { transaction.id }
+
+    before do
+      login(current_user)
+      delete :destroy, params: { id: transaction_id }
+    end
 
     context "success" do
-
-      before do
-        login(current_user)
-        delete :destroy, params: { id: transaction.id }
-      end
-
       it "deletes transaction" do
         expect(response.status).to eq(200)
       end
@@ -142,16 +175,22 @@ RSpec.describe TransactionsController, type: :controller do
     context "failure" do
       let!(:not_current_user) { FactoryBot.create(:user, first_name: "whiteson", last_name: "vasar", email: "whiteson@mail.com", password: "1234567890", password_confirmation: "1234567890") }
       let!(:transaction) do
-        FactoryBot.create(:transaction, user: current_user, description: "my description", amount: "12000", classification: "income")
-      end
-
-      before do
-        login(not_current_user)
-        delete :destroy, params: { id: transaction.id }
+        FactoryBot.create(:transaction, user: not_current_user, description: "my description", amount: "12000", classification: "income")
       end
 
       it "returns failure to not_current_user" do
         expect(response.status).to eq(401)
+      end
+    end
+
+    context "not found" do
+      let(:transaction_id) { 2000 }
+      let(:attributes) do
+        { description: "new description" }
+      end
+
+      it "returns 404 not found" do
+        expect(response_body["message"]).to eq("Record not found")
       end
     end
   end

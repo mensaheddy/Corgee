@@ -11,7 +11,7 @@ RSpec.describe UpdateTransactionService, type: :service do
 
   context "success" do
     let(:attributes) do
-      { description: "updated transaction", amount: "12", classification: "expense", user_id: current_user.id}
+      { description: "updated transaction", amount: "12", classification: "expense" }
     end
 
     it "outcome to be success" do
@@ -25,7 +25,7 @@ RSpec.describe UpdateTransactionService, type: :service do
 
   context "faliure" do
     let(:attributes) do
-      { description: "updated transaction", amount: "12", classification: "corege", user_id: current_user.id}
+      { description: "updated transaction", amount: "12", classification: "corege" }
     end
 
     it "outcome to classification error" do
