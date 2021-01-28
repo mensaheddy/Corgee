@@ -1,4 +1,4 @@
-# Backend Challenge
+# Backend - API
 The link to the [API documentation](https://documenter.getpostman.com/view/13329181/TVsoFVc4)
 ## Learning Competencies
 - Implement Object Oriented Design.
